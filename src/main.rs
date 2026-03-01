@@ -1,27 +1,41 @@
+use std::sync::{Arc, Mutex};
+
+use axum::{Router, routing::get};
+
+use crate::models::TodoJson;
+
 mod models;
 mod routes;
 mod state;
 
-fn print_todos(todos: &[state::TodoJson]) {
-    for todo in todos {
-        println!(
-            "Todo(id={}, title={}, completed={})",
-            todo.id, todo.title, todo.completed
-        )
-    }
+#[allow(unused)]
+fn print_todo(todo: &TodoJson) {
+    println!(
+        "Todo(id={}, title={}, completed={})",
+        todo.id, todo.title, todo.completed
+    )
 }
 
-fn main() {
-    let mut state = state::AppState::new();
+#[allow(unused)]
+fn print_todos(mut todos: Vec<&TodoJson>) {
+    todos.sort_by_key(|todo| todo.id);
 
-    for string in [
-        "Brush teeth",
-        "Have Breakfast",
-        "Do the dishes",
-        "Have lunch",
-    ] {
-        let _todo = state.create_todo(string);
+    println!("--------------------------");
+
+    for todo in todos {
+        print_todo(todo)
     }
+    println!("--------------------------");
+}
 
-    print_todos(&state.get_todos());
+#[tokio::main]
+async fn main() {
+    let state = Arc::new(Mutex::new(state::AppState::new()));
+
+    let app = routes::create_router(state);
+
+    let listener = tokio::net::TcpListener::bind("localhost:3000")
+        .await
+        .unwrap();
+    axum::serve(listener, app).await.unwrap();
 }

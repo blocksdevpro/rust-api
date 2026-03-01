@@ -1,13 +1,5 @@
-use serde::{Deserialize, Serialize};
+use crate::models::TodoJson;
 use std::collections::HashMap;
-
-#[derive(Deserialize, Serialize, Clone)]
-#[allow(dead_code)]
-pub struct TodoJson {
-    pub id: u16,
-    pub title: String,
-    pub completed: bool,
-}
 
 pub struct AppState {
     next_id: u16,
@@ -22,35 +14,38 @@ impl AppState {
         }
     }
 
-    pub fn get_todos(&self) -> Vec<TodoJson> {
-        return self.todos.values().cloned().collect();
+    pub fn get_todos(&self) -> Vec<&TodoJson> {
+        self.todos.values().collect()
     }
 
-    #[warn(dead_code)]
-    pub fn get_todo(&self, id: u16) -> Option<TodoJson> {
-        return self.todos.get(&id).cloned();
+    #[allow(dead_code)]
+    pub fn get_todo(&self, id: u16) -> Option<&TodoJson> {
+        self.todos.get(&id)
     }
 
-    pub fn create_todo(&mut self, title: &str) -> TodoJson {
+    pub fn create_todo(&mut self, title: &str) -> Option<&TodoJson> {
         let id = self.next_id;
-        let todo = TodoJson {
-            id,
-            title: title.to_string(),
-            completed: false,
-        };
 
-        self.todos.insert(id, todo.clone());
+        self.todos.insert(
+            id,
+            TodoJson {
+                id,
+                title: title.to_string(),
+                completed: false,
+            },
+        );
+
         self.next_id += 1;
-        return todo;
+        self.todos.get(&id)
     }
 
-    #[warn(unused)]
+    #[allow(unused)]
     pub fn update_todo(
         &mut self,
         id: u16,
         title: Option<&str>,
         completed: Option<bool>,
-    ) -> Option<TodoJson> {
+    ) -> Option<&TodoJson> {
         let todo = self.todos.get_mut(&id)?;
 
         if let Some(title) = title {
@@ -60,6 +55,11 @@ impl AppState {
             todo.completed = completed;
         }
 
-        Some(todo.clone())
+        self.todos.get(&id)
+    }
+
+    #[allow(unused)]
+    pub fn delete_todo(&mut self, id: u16) -> Option<TodoJson> {
+        self.todos.remove(&id)
     }
 }
