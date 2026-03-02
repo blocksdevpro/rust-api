@@ -1,7 +1,5 @@
 use std::sync::{Arc, Mutex};
 
-use axum::{Router, routing::get};
-
 use crate::models::TodoJson;
 
 mod models;
