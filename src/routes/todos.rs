@@ -1,3 +1,5 @@
+use std::cmp::Reverse;
+
 use crate::models::TodoJson;
 use crate::routes::SharedState;
 use axum::{
@@ -34,8 +36,11 @@ async fn get_todos_handler(
     State(state): State<SharedState>,
 ) -> Result<Json<Vec<TodoJson>>, StatusCode> {
     let state = state.lock().unwrap();
-    let todos = state.get_todos().into_iter().cloned().collect();
-    Ok(Json(todos))
+    let mut todos = state.get_todos();
+
+    // sort the todos sort_by t.id DESC
+    todos.sort_by_key(|todo| Reverse(todo.id));
+    Ok(Json(todos.into_iter().cloned().collect()))
 }
 
 async fn get_todo_handler(
