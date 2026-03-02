@@ -2,8 +2,8 @@ use crate::models::TodoJson;
 use std::collections::HashMap;
 
 pub struct AppState {
-    next_id: u16,
-    todos: HashMap<u16, TodoJson>,
+    next_id: u32,
+    todos: HashMap<u32, TodoJson>,
 }
 
 impl AppState {
@@ -18,8 +18,7 @@ impl AppState {
         self.todos.values().collect()
     }
 
-    #[allow(dead_code)]
-    pub fn get_todo(&self, id: u16) -> Option<&TodoJson> {
+    pub fn get_todo(&self, id: u32) -> Option<&TodoJson> {
         self.todos.get(&id)
     }
 
@@ -39,10 +38,9 @@ impl AppState {
         self.todos.get(&id)
     }
 
-    #[allow(unused)]
     pub fn update_todo(
         &mut self,
-        id: u16,
+        id: u32,
         title: Option<&str>,
         completed: Option<bool>,
     ) -> Option<&TodoJson> {
@@ -58,8 +56,7 @@ impl AppState {
         self.todos.get(&id)
     }
 
-    #[allow(unused)]
-    pub fn delete_todo(&mut self, id: u16) -> Option<TodoJson> {
+    pub fn delete_todo(&mut self, id: u32) -> Option<TodoJson> {
         self.todos.remove(&id)
     }
 }

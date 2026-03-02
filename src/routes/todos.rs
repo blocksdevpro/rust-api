@@ -40,7 +40,7 @@ async fn get_todos_handler(
 
 async fn get_todo_handler(
     State(state): State<SharedState>,
-    Path(id): Path<u16>,
+    Path(id): Path<u32>,
 ) -> Result<Json<TodoJson>, StatusCode> {
     let state = state.lock().unwrap();
     match state.get_todo(id) {
@@ -51,7 +51,7 @@ async fn get_todo_handler(
 
 async fn delete_todos_handler(
     State(state): State<SharedState>,
-    Path(id): Path<u16>,
+    Path(id): Path<u32>,
 ) -> Result<Json<TodoJson>, StatusCode> {
     let mut state = state.lock().unwrap();
     match state.delete_todo(id) {
@@ -62,7 +62,7 @@ async fn delete_todos_handler(
 
 async fn update_todos_handler(
     State(state): State<SharedState>,
-    Path(id): Path<u16>,
+    Path(id): Path<u32>,
     Json(payload): Json<UpdateTodoRequest>,
 ) -> Result<Json<TodoJson>, StatusCode> {
     let mut state = state.lock().unwrap();
